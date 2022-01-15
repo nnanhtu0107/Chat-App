@@ -7,6 +7,17 @@ socket.on("disconnect", function () {
   console.log("Disconnected from server.");
 });
 
-socket.on("newMessage", (message) => {
-  console.log("newMewssage", message);
+socket.on("newMessage", function (message) {
+  console.log("newMessage", message);
 });
+
+socket.emit(
+  "createMessage",
+  {
+    from: "John",
+    text: "Hey",
+  },
+  function (message) {
+    console.log("Go it", message);
+  }
+);

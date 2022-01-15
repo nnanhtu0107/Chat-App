@@ -1,11 +1,12 @@
 import express from "express";
+import path from "path";
+import http from "http";
 
-const path = require("path");
-const http = require("http");
-const socketIO = require("socket.io");
 require("dotenv").config();
 
 const pathPublic = path.join(__dirname, "/public");
+const socketIO = require("socket.io");
+const { generateMessage } = require("./server/utils/message");
 const port = process.env.PORT || 1234;
 
 let app = express();
@@ -17,25 +18,20 @@ app.use(express.static(pathPublic));
 io.on("connection", (socket) => {
   console.log("A news user just connected");
 
-  socket.emit("newMessage", {
-    from: "Admin",
-    text: "Welcome to the chat app!",
-    createAt: new Date().getTime(),
-  });
+  socket.emit(
+    "newMessage",
+    generateMessage("Admin", "Welcome to the chat app!")
+  );
 
-  socket.broadcast.emit("newMessage", {
-    from: "Admin",
-    text: "New User Joined!",
-    createAt: new Date().getTime(),
-  });
+  socket.broadcast.emit(
+    "newMessage",
+    generateMessage("Admin", "New User Joined!")
+  );
 
-  socket.on("CreateMessage", (message) => {
-    console.log("CreateMessage", message);
-    io.emit("newMessage", {
-      from: message.from,
-      text: message.text,
-      createAt: new Date().getTime(),
-    });
+  socket.on("createMessage", (message, callback) => {
+    console.log("createMessage", message);
+    io.emit("newMessage", generateMessage(message.from, message.text));
+    callback("This is the server!");
   });
 
   socket.on("disconnect", () => {
