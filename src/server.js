@@ -1,12 +1,14 @@
 import express from "express";
 import path from "path";
 import http from "http";
-
+import {
+  generateMessage,
+  generateLocationMessage,
+} from "./server/utils/message";
 require("dotenv").config();
 
 const pathPublic = path.join(__dirname, "/public");
 const socketIO = require("socket.io");
-const { generateMessage } = require("./server/utils/message");
 const port = process.env.PORT || 1234;
 
 let app = express();
@@ -32,6 +34,12 @@ io.on("connection", (socket) => {
     console.log("createMessage", message);
     io.emit("newMessage", generateMessage(message.from, message.text));
     callback("This is the server!");
+  });
+  socket.on("createLocationMessage", (coords) => {
+    io.emit(
+      "newLocationMessage",
+      generateLocationMessage("Admin", coords.lat, coords.lng)
+    );
   });
 
   socket.on("disconnect", () => {
