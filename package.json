@@ -2,7 +2,7 @@
   "name": "chat-app",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "start": "nodemon --exec babel-node src/server.js",
     "test": "mocha src/server/**/*.test.js ",
@@ -21,6 +21,8 @@
     "dotenv": "^8.6.0",
     "expect": "^27.4.6",
     "express": "^4.17.2",
+    "moment": "^2.23.0",
+    "mustache": "^4.2.0",
     "nodemon": "^2.0.15",
     "socket.io": "^4.4.1"
   },
