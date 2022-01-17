@@ -1,4 +1,10 @@
 let socket = io();
+
+let scrollToButtom = () => {
+  let messages = document.querySelector("#messages").lastElementChild;
+  messages.scrollIntoView();
+};
+
 socket.on("connect", () => {
   console.log("Connected to server.");
 });
@@ -18,6 +24,7 @@ socket.on("newMessage", function (message) {
   div.innerHTML = html;
 
   document.querySelector("#messages").appendChild(div);
+  scrollToButtom();
 });
 
 socket.on("newLocationMessage", (message) => {
@@ -68,3 +75,6 @@ document.querySelector("#send-location").addEventListener("click", (e) => {
     }
   );
 });
+module.exports = {
+  scrollToButtom,
+};
