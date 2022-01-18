@@ -1,15 +1,14 @@
-// [
-//   {
-//     id: "1212213",
-//     name: "WDJ",
-//     room: "node js",
-//   },
-// ];
+// [{
+//   id: 'sdfgsdfgsdfg',
+//   name: 'WDJ',
+//   room: 'node js'
+// }]
 
 class Users {
   constructor() {
     this.users = [];
   }
+
   addUser(id, name, room) {
     let user = { id: id, name: name, room: room };
     this.users.push(user);
@@ -22,6 +21,7 @@ class Users {
 
     return namesArray;
   }
+
   getUser(id) {
     return this.users.filter((user) => user.id === id)[0];
   }
@@ -32,9 +32,9 @@ class Users {
     if (user) {
       this.users = this.users.filter((user) => user.id !== id);
     }
+
     return user;
   }
 }
-module.exports = {
-  Users,
-};
+
+module.exports = { Users };
