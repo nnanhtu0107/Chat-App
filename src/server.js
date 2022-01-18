@@ -5,6 +5,8 @@ import {
   generateMessage,
   generateLocationMessage,
 } from "./server/utils/message";
+import isRealString from "./server/utils/isRealString";
+
 require("dotenv").config();
 
 const pathPublic = path.join(__dirname, "/public");
@@ -20,15 +22,25 @@ app.use(express.static(pathPublic));
 io.on("connection", (socket) => {
   console.log("A news user just connected");
 
-  socket.emit(
-    "newMessage",
-    generateMessage("Admin", "Welcome to the chat app!")
-  );
+  socket.on("join", (params, callback) => {
+    if (!isRealString(params.name) || !isRealString(params.room)) {
+      callback("Name and room are required");
+    }
 
-  socket.broadcast.emit(
-    "newMessage",
-    generateMessage("Admin", "New User Joined!")
-  );
+    socket.join(params.room);
+
+    socket.emit(
+      "newMessage",
+      generateMessage("Admin", "Welcome to the chat app!")
+    );
+
+    socket.broadcast.emit(
+      "newMessage",
+      generateMessage("Admin", "New User Joined!")
+    );
+
+    callback();
+  });
 
   socket.on("createMessage", (message, callback) => {
     console.log("createMessage", message);
