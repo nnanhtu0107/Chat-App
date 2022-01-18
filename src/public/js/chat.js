@@ -1,6 +1,5 @@
 let socket = io();
 
-//create scroullbuttom scroull bar chat.html
 function scrollToBottom() {
   let messages = document.querySelector("#messages").lastElementChild;
   messages.scrollIntoView();
@@ -26,9 +25,11 @@ socket.on("connect", function () {
     }
   });
 });
-socket.on("disconnect", () => {
-  console.log("Disconnected from server.");
+
+socket.on("disconnect", function () {
+  console.log("disconnected from server.");
 });
+
 socket.on("updateUsersList", function (users) {
   let ol = document.createElement("ol");
 
@@ -42,14 +43,16 @@ socket.on("updateUsersList", function (users) {
   usersList.innerHTML = "";
   usersList.appendChild(ol);
 });
+
 socket.on("newMessage", function (message) {
-  let formattedTime = moment(message.createdAt).format("LT");
+  const formattedTime = moment(message.createdAt).format("LT");
   const template = document.querySelector("#message-template").innerHTML;
   const html = Mustache.render(template, {
     from: message.from,
     text: message.text,
     createdAt: formattedTime,
   });
+
   const div = document.createElement("div");
   div.innerHTML = html;
 
@@ -57,9 +60,10 @@ socket.on("newMessage", function (message) {
   scrollToBottom();
 });
 
-socket.on("newLocationMessage", (message) => {
-  let formattedTime = moment(message.createdAt).format("LT");
+socket.on("newLocationMessage", function (message) {
+  const formattedTime = moment(message.createdAt).format("LT");
   console.log("newLocationMessage", message);
+
   const template = document.querySelector(
     "#location-message-template"
   ).innerHTML;
@@ -68,40 +72,44 @@ socket.on("newLocationMessage", (message) => {
     url: message.url,
     createdAt: formattedTime,
   });
+
   const div = document.createElement("div");
   div.innerHTML = html;
 
   document.querySelector("#messages").appendChild(div);
+  scrollToBottom();
 });
 
-document.querySelector("#submit-btn").addEventListener("click", (e) => {
+document.querySelector("#submit-btn").addEventListener("click", function (e) {
   e.preventDefault();
 
   socket.emit(
     "createMessage",
     {
-      from: "User",
       text: document.querySelector('input[name="message"]').value,
     },
-    function () {}
-  );
-});
-
-document.querySelector("#send-location").addEventListener("click", (e) => {
-  if (!navigator.geolocation) {
-    return alert("Geolocation is not supperted by your browser.");
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      console.log(position);
-      socket.emit("createLocationMessage", {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      });
-    },
-    () => {
-      alert("Unable to fetch location.");
+    function () {
+      document.querySelector('input[name="message"]').value = "";
     }
   );
 });
+
+document
+  .querySelector("#send-location")
+  .addEventListener("click", function (e) {
+    if (!navigator.geolocation) {
+      return alert("Geolocation is not supported by your browser.");
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        socket.emit("createLocationMessage", {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      function () {
+        alert("Unable to fetch location.");
+      }
+    );
+  });
